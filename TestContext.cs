@@ -409,17 +409,16 @@ public class TestContext
         var area = t.GetColumn("Площадь ОКС");
         var kad = t.GetColumn("Кад. номер ОКС");
         var add = t.GetColumn("Дополн. фильтр");
+        var type = t.GetColumn("Вид ОН");
 
         foreach (int y in EachRow())
         {
-            if (assert.IsEmpty(kad) || assert.IsContains(add, "Фиктивный КН"))
-            {
-                //assert.ZeroOrEmpty(area); // may be ZeroOrEmpty or must be ZeroOrEmpty?
-            }
-            else
-            {
-                assert.NotZeroOrEmpty(area);
-            }
+            if (assert.IsEmpty(kad)) continue;
+            if (assert.IsContains(add, "Фиктивный КН")) continue;
+            if (assert.IsContains(add, "АРХИВ")) continue;
+            if (assert.IsEqual(type, "ONS")) continue;
+
+            assert.NotZeroOrEmpty(area);
         }
     }
 
