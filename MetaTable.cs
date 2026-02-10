@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using OfficeOpenXml;
 
 public class MetaTable
@@ -35,8 +32,24 @@ public class MetaTable
             // Console.WriteLine($"- [{c.x}] {c.name}");
         }
 
-        rows = s.Rows.Count() - 1;
-        Console.WriteLine($"Размер таблицы: {columns.Count}x{rows}");
+        int rowsByMetaInfo = s.Dimension.End.Row;
+
+        int rowsByActualData = rowsByMetaInfo;
+        while (rowsByActualData > 0 && string.IsNullOrEmpty(s.At(0, rowsByActualData).Text))
+        {
+            rowsByActualData--;
+        }
+
+        if (rowsByMetaInfo != rowsByActualData)
+        {
+            rows = rowsByActualData - 1; // Exclude header row
+            Console.WriteLine($"Размер таблицы: {columns.Count}x{rows} (Метаданные искажены: {columns.Count}x{rowsByMetaInfo})");
+        }
+        else
+        {
+            rows = rowsByActualData - 1; // Exclude header row
+            Console.WriteLine($"Размер таблицы: {columns.Count}x{rows}");
+        }
     }
 
     public Column GetColumn(string name)
